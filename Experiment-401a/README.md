@@ -1,23 +1,23 @@
-# Experiment 401: Handling Hardware Interrupts in QNX
+# Experiment 401: Interrupt Handling with Counter in QNX
 
 ## Aim
 
-To demonstrate **hardware interrupt handling in QNX** by attaching to an interrupt and waiting for the interrupt event.
+To implement **hardware interrupt handling in QNX** and maintain a **count of the number of interrupts received**.
 
 ---
 
 ## Objective
 
-* To understand **interrupt handling in the QNX Neutrino RTOS**.
-* To use the functions **InterruptAttach()** and **InterruptWait()**.
-* To detect and respond when an interrupt occurs.
+* To understand **interrupt handling in QNX Neutrino RTOS**.
+* To use **InterruptAttach()** and **InterruptWait()** functions.
+* To maintain a **counter to track the number of interrupts received**.
 
 ---
 
 ## Problem Statement
 
 Develop a QNX program that **attaches to a hardware interrupt (e.g., keyboard interrupt)** and waits for the interrupt to occur.
-Whenever the interrupt is triggered, the program should **print a message indicating that the interrupt was received**.
+Each time the interrupt occurs, the program should **display a message and increment a counter showing how many times the interrupt has been received**.
 
 ---
 
@@ -26,23 +26,27 @@ Whenever the interrupt is triggered, the program should **print a message indica
 1. Start the program.
 2. Declare a variable for the **interrupt number (IRQ)**.
 3. Declare a variable to store the **interrupt attachment ID**.
-4. Display a message indicating the start of the interrupt example.
-5. Attach to the interrupt using `InterruptAttach()`.
-6. If interrupt attachment fails:
+4. Declare and initialize a **counter variable to 0**.
+5. Display a message indicating the start of the interrupt example.
+6. Attach to the interrupt using `InterruptAttach()`.
+7. If interrupt attachment fails:
 
-   * Print the error message.
+   * Display the error message.
    * Terminate the program.
-7. Display a message indicating successful interrupt attachment.
-8. Enter an infinite loop.
-9. Wait for the interrupt using `InterruptWait()`.
-10. When the interrupt occurs, print **"Interrupt received!"**.
-11. Continue waiting for the next interrupt.
+8. Display a message indicating successful interrupt attachment.
+9. Enter an infinite loop.
+10. Wait for the interrupt using `InterruptWait()`.
+11. When the interrupt occurs:
+
+    * Print **"Interrupt received! Count is X"**.
+12. Increment the counter value.
+13. Continue waiting for the next interrupt.
 
 ---
 
 # Program
 
-```c
+```c id="xtm12h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/neutrino.h>
@@ -53,8 +57,9 @@ int main(int argc, char *argv[])
 {
     int irq = 1;           // interrupt number (example: keyboard)
     int id;
+    int count = 0;
 
-    printf("Simple Interrupt Example\n");
+    printf("Simple Interrupt \n");
 
     /* Attach interrupt */
     id = InterruptAttach(irq, NULL, NULL, 0, 0);
@@ -71,7 +76,8 @@ int main(int argc, char *argv[])
         /* Wait for interrupt */
         InterruptWait(0, NULL);
 
-        printf("Interrupt received!\n");
+        printf("Interrupt received! , Count is %d\n", count);
+        count++;
     }
 
     return 0;
@@ -82,19 +88,22 @@ int main(int argc, char *argv[])
 
 # Expected Output
 
-```text
-Simple Interrupt Example
+```text id="bl34ke"
+Simple Interrupt 
 Attached to interrupt 1
-Interrupt received!
-Interrupt received!
-Interrupt received!
+Interrupt received! , Count is 0
+Interrupt received! , Count is 1
+Interrupt received! , Count is 2
+Interrupt received! , Count is 3
+Interrupt received! , Count is 4
 ...
 ```
 
-*(The message appears each time the specified interrupt occurs.)*
+*(The counter increases each time the interrupt occurs.)*
 
 ---
 
 # Result
 
-Thus, the **hardware interrupt handling mechanism in QNX** was successfully implemented using `InterruptAttach()` and `InterruptWait()`, and the program correctly responded whenever the interrupt occurred.
+Thus, the **hardware interrupt handling mechanism in QNX** was successfully implemented using `InterruptAttach()` and `InterruptWait()`.
+The program correctly detected interrupts and **maintained a counter showing the number of interrupts received**.
